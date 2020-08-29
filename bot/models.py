@@ -33,8 +33,8 @@ class NairalandAccount(models.Model):
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     activated = models.BooleanField(default=False)
-    account_type = models.CharField(max_length=2, choices=ACCOUNT_TYPE)
-    license_key = models.CharField(max_length=200, blank=True)
+    account_type = models.CharField(max_length=2, choices=ACCOUNT_TYPE, default='n')
+    license_key = models.CharField(max_length=200, blank=True, null=True)
 
     def __str__(self):
         return self.user.username
