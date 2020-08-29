@@ -1,0 +1,57 @@
+{% extends 'bot/theme/index.html' %}
+
+{% block main %}
+
+
+ <!-- Outer Row -->
+    <div class="row justify-content-center">
+
+      <div class="col-xl-10 col-lg-12 col-md-9">
+
+<div class="card o-hidden border-0 shadow-lg my-5">
+  <div class="card-body p-0">
+    <!-- Nested Row within Card Body -->
+    <div class="row">
+      <div class="col-lg-6">
+	<div class="p-5">
+		<div class="table-responsive">
+		<table class="table">
+		<tr>
+			<th>Username:</th>
+			<td>{{ object.username }}</td>
+		</tr>
+		<tr>
+			<th>Password:</th>
+			<td>{{ object.password }}</td>
+		</tr>
+		</table>
+		</div>
+	       </div>
+              </div>
+            </div>
+	    <div class="row pb-5 pl-2 pr-2">
+		   		    <div class="col-6">
+			    <div class="text-center">
+				    <a class="btn btn-sm btn-primary" href="/ac/{{ object.pk }}/edit">Edit Account</a>
+			    </div>
+		    </div>
+		    <div class="col-6">
+			    <div class="text-center">
+				    <a class="btn btn-sm btn-danger" href="/ac/{{ object.pk }}/delete">Delete</a>
+			    </div>
+		    </div>
+
+
+	    </div>
+	</div>
+        </div>
+
+      </div>
+
+    </div>
+
+
+
+
+
+{% endblock %}

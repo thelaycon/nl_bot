@@ -1,0 +1,85 @@
+{% extends 'bot/theme/index.html' %}
+
+{% block main %}
+
+
+<div class="container">
+
+    <!-- Outer Row -->
+    <div class="row justify-content-center">
+
+      <div class="col-xl-10 col-lg-12 col-md-9">
+
+<div class="card o-hidden border-0 shadow-lg my-5">
+  <div class="card-body p-0">
+    <!-- Nested Row within Card Body -->
+    <div class="row">
+	<div class="p-5">
+		<div class="col-auto">
+	  <div class="text-center">
+		  <h1 class="h4 text-gray-900 mb-4">Activate  {{ board_job.board_name }} Job</h1>
+	  </div>
+		</div>
+		<form class="user" action='/jobs/bj/{{ board_job.pk }}/activate/' method='POST' novalidate>
+		  {% csrf_token %}
+				      <div class="col-auto">
+                    <div class="form-group">
+			 {% if form.minutes.errors %}
+	
+			                         <input type="number" class="form-control is-invalid" name="minutes" placeholder="Minutes Interval">
+		      	      <div class="is-invalid text-danger">
+			      <ul>
+				      {% for error in form.minutes.errors %}
+				      <li>{{ error }}</li>
+				      {% endfor %}
+			      </ul>
+		      </div>
+		      {% else %}
+		      <input type="number" class="form-control" name="minutes" placeholder="Minutes Interval">
+		      	
+		      {% endif %}
+                    </div>
+	</div>
+	<div class="col-auto">
+                    <div class="form-group">
+			 {% if form.nl_account_pk.errors %}
+	
+			                         <input type="text" class="form-control is-invalid" name="nl_account_pk" placeholder="Password">
+		      	      <div class="is-invalid text-danger">
+			      <ul>
+				      {% for error in form.nl_account_pk.errors %}
+				      <li>{{ error }}</li>
+				      {% endfor %}
+			      </ul>
+		      </div>
+		      {% else %}
+		      <select class="form-control" name="nl_account_pk">
+			      {% for nl_account in nl_accounts %}
+			      <option value="{{ nl_account.pk }}">{{ nl_account.username }}</option>
+			      {% endfor %}
+		      </select>
+		      {% endif %}
+                    </div>
+	</div>
+
+		    <div class="col-auto">
+                <button type="submit" class="btn btn-primary btn-user btn-block">
+                      Activate
+		</button>
+		    </div>
+                                      </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+
+{% endblock %}
