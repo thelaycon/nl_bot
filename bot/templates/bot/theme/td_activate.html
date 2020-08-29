@@ -20,7 +20,7 @@
 		  <h1 class="h4 text-gray-900 mb-4">Activate  {{ thread_job.topic_code }} Job</h1>
 	  </div>
 		</div>
-		<form class="user" action='/jobs/td/{{ thread_job.pk }}/activate/' method='POST' novalidate>
+		<form class="user" action='/jobs/td/{{ thread_job.pk }}/activate/' method='POST' validate>
 		  {% csrf_token %}
 				      <div class="col-auto">
                     <div class="form-group">
