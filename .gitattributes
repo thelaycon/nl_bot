@@ -1,2 +1,3 @@
-staticfiles/* linguist-vendored
-.css linguist-language=Python
+
+* linguist-vendored
+*.py linguist-vendored=false
