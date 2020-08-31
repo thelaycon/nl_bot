@@ -1,10 +1,11 @@
 # nl_bot
 A Spam Bot to automate spamming activities on Nairaland.
 
-#SETUP:
+# SETUP:
 
 ```
 pip install -r requirements.txt
+
 ```
 
 User must have to set `SECRET_KEY` and `DATABASE_URL` environment variables
@@ -31,6 +32,7 @@ python manage.py migrate
 **Run server:**
 
 ```
+
 gunicorn project.wsgi
 
 ```
