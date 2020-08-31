@@ -39,11 +39,12 @@ gunicorn project.wsgi
 
 # USAGE:
 
-NL Bot doesn't support registration form the Frontend because it was originally not intended for **SaaS*. You must manually create a User object from the command Line.
+NL Bot doesn't support registration form the Frontend because it was originally not intended for **SaaS**. You must manually create a User object from the command Line.
 
-Before a user can create any Spamming Job, they must activate the App with a valid license key. However, this is useless if the end user has a good knowledge about Python.
+Before a user can create any Spamming Job, they must activate the App with a valid license key. However, this is useless if the end user has a good knowledge of Python. It's hard protecting Source codes in Python.
+Some [protection mechanisms](https://wiki.python.org/moin/Asking%20for%20Help/How%20do%20you%20protect%20Python%20source%20code%3F) though can be applied. 
 
-** NB: ** The license key is weakly generated. You'd probably need a better mechanism to generate any validate License key.
+**NB:** The license key is weakly generated. You'd probably need a better mechanism to generate any validate License key.
 
 # License Key:
 
