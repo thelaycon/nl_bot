@@ -20,62 +20,25 @@
 	    <h1 class="h4 text-gray-900 mb-4">Edit Board Job</h1>
 	  </div>
 		</div>
-		<form class="user" action='/jobs/bj/{{ object.pk }}/edit/' method='POST' novalidate>
+		<form class="user" action='/jobs/bj/{{ object.pk }}/edit/' method='POST'>
 		  {% csrf_token %}
 				      <div class="col-auto">
                     <div class="form-group">
-			 {% if form.board_name.errors %}
-	
-			 <input type="text" class="form-control is-invalid" name="board_name" value="{{ object.board_name }}">
-		      	      <div class="is-invalid text-danger">
-			      <ul>
-				      {% for error in form.board_name.errors %}
-				      <li>{{ error }}</li>
-				      {% endfor %}
-			      </ul>
-		      </div>
-		      {% else %}
-		      <input type="text" class="form-control" name="board_name" value="{{ object.board_name }}">
+					      <input type="text" class="form-control" name="board_name" value="{{ object.board_name }}" required>
 		      	
-		      {% endif %}
                     </div>
 	</div>
 	<div class="col-auto">
                     <div class="form-group">
-			 {% if form.board_uri.errors %}
-	
-			 <input type="text" class="form-control is-invalid" name="board_uri" value="{{ object.board_uri }}">
-		      	      <div class="is-invalid text-danger">
-			      <ul>
-				      {% for error in form.board_uri.errors %}
-				      <li>{{ error }}</li>
-				      {% endfor %}
-			      </ul>
-		      </div>
-		      {% else %}
-		      <input type="text" class="form-control" name="board_uri" value="{{ object.board_uri }}">
+				      <input type="text" class="form-control" name="board_uri" value="{{ object.board_uri }}" required>
 		      	
-		      {% endif %}
                     </div>
 	</div>
 	<div class="col-auto">
                     <div class="form-group">
-			 {% if form.reply.errors %}
-	
-			 <textarea class="form-control is-invalid" name="reply" row="10">
-				 {{ object.reply }}
-			 </textarea>
-		      	      <div class="is-invalid text-danger">
-			      <ul>
-				      {% for error in form.reply.errors %}
-				      <li>{{ error }}</li>
-				      {% endfor %}
-			      </ul>
-		      </div>
-		      {% else %}
-		      <textarea class="form-control" name="reply" row="10">{{ object.reply }}</textarea>
+			
+		      <textarea class="form-control" name="reply" row="10" required>{{ object.reply }}</textarea>
 		      	
-		      {% endif %}
                     </div>
 	</div>
 

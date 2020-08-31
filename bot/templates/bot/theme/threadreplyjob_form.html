@@ -20,43 +20,18 @@
 	    <h1 class="h4 text-gray-900 mb-4">Add Thread Job</h1>
 	  </div>
 		</div>
-	  <form class="user" action='/jobs/td/add/' method='POST' novalidate>
+	  <form class="user" action='/jobs/td/add/' method='POST'>
 		  {% csrf_token %}
 				      <div class="col-auto">
                     <div class="form-group">
-			 {% if form.thread_title.errors %}
-	
-			                         <input type="text" class="form-control is-invalid" name="thread_title" placeholder="Thread title">
-		      	      <div class="is-invalid text-danger">
-			      <ul>
-				      {% for error in form.thread_title.errors %}
-				      <li>{{ error }}</li>
-				      {% endfor %}
-			      </ul>
-		      </div>
-			      {% else %}
-			      <input type="text" class="form-control" name="thread_title" placeholder="Thread title">
-		      	
-		      {% endif %}
+			 			<input type="text" class="form-control" name="thread_title" placeholder="Thread title" required>
                     </div>
 	</div>
 	
 	<div class="col-auto">
                     <div class="form-group">
-			 {% if form.topic_code.errors %}
-	
-			                         <input type="text" class="form-control is-invalid" name="topic_code" placeholder="Topic code">
-		      	      <div class="is-invalid text-danger">
-			      <ul>
-				      {% for error in form.topic_code.errors %}
-				      <li>{{ error }}</li>
-				      {% endfor %}
-			      </ul>
-		      </div>
-		      {% else %}
-			      <input type="text" class="form-control" name="topic_code" placeholder="Topic code">
+			      <input type="number" class="form-control" name="topic_code" placeholder="Topic code" required>
 					
-		      {% endif %}
                     </div>
 	</div>
 
@@ -64,20 +39,8 @@
 
 	<div class="col-auto">
                     <div class="form-group">
-			 {% if form.reply.errors %}
-	
-			 <textarea class="form-control is-invalid" name="reply" placeholder="Reply" row="10"></textarea>
-		      	      <div class="is-invalid text-danger">
-			      <ul>
-				      {% for error in form.reply.errors %}
-				      <li>{{ error }}</li>
-				      {% endfor %}
-			      </ul>
-		      </div>
-		      {% else %}
-		      <textarea class="form-control" name="reply" row="10" placeholder="Reply"></textarea>
+		      <textarea class="form-control" name="reply" row="10" placeholder="Reply" required></textarea>
 		      	
-		      {% endif %}
                     </div>
 	</div>
 
