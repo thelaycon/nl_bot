@@ -13,7 +13,8 @@ from django.http import HttpResponseRedirect
 from cryptography.fernet import Fernet
 
 
-def start_job(login_details, thread_title, topic_code, thread_reply, thread_job, nl_account):
+def start_job(login_details, thread_title, topic_code, thread_reply, thread_job, nl_account, minutes):
+    print("Started")
     job = cron_jobs.ThreadReplyJob_(login_details, thread_title, topic_code, thread_reply)
     job.login()
     cron_jobs.scheduler.add_job(job.spam_thread, 'interval', minutes=int(minutes), id=nl_account_pk)
