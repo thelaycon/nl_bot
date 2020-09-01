@@ -13,23 +13,6 @@ from django.http import HttpResponseRedirect
 from cryptography.fernet import Fernet
 
 
-def start_job(login_details, thread_title, topic_code, thread_reply, thread_job, nl_account):
-    job = cron_jobs.ThreadReplyJob_(login_details, thread_title, topic_code, thread_reply)
-    job.login()
-    cron_jobs.scheduler.add_job(job.spam_thread, 'interval', minutes=int(minutes), id=nl_account_pk)
-
-    #Change has job value
-    nl_account.has_job = True
-
-    #Activate Job
-    thread_job.activated = True
-    thread_job.nl_account_pk = nl_account_pk
-    nl_account.save()
-    thread_job.save()
-
-
-
-
 @login_required(login_url='/login')
 def home(request):
     context = {
@@ -135,8 +118,20 @@ def activateTdJob(request, pk):
             messages.warning(request, "NL Account has a job!!!")
         else:
             minutes = request.POST['minutes']
+            print(nl_account_pk)
             login_details = {'name':nl_account.username,'password':nl_account.password}
-            async_task(start_job, [login_details, thread_title, topic_code, thread_reply, thread_job, nl_account])
+            job = cron_jobs.ThreadReplyJob_(login_details, thread_title, topic_code, thread_reply)
+            job.login()
+            cron_jobs.scheduler.add_job(job.spam_thread, 'interval', minutes=int(minutes), id=nl_account_pk)
+            #Change has job value
+
+            nl_account.has_job = True
+            #Activate Job
+
+            thread_job.activated = True
+            thread_job.nl_account_pk = nl_account_pk
+            nl_account.save()
+            thread_job.save()
             return redirect(reverse('threadreplyjob-detail', kwargs={'pk':thread_job.pk}))
         
     return render(request, 'bot/theme/td_activate.html', {'nl_accounts':nl_accounts, 'thread_job':thread_job})
