@@ -34,13 +34,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'bot',
-    'django_q',
 ]
 
-Q_CLUSTER = {
-    "name": "shop",
-    "orm": "default",
-}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
