@@ -15,6 +15,7 @@ class ThreadReplyJob_():
         self.login_details = login_details
         self.session = requests.Session()
         self.session_id = ''
+        self.logged_in = False
 
 
 
@@ -26,6 +27,7 @@ class ThreadReplyJob_():
                 print(self.session)
                 self.session_id = self.session.cookies.get('session')
                 self.reply['session'] = self.session_id
+                self.logged_in = True
                 break
 
 
@@ -33,6 +35,8 @@ class ThreadReplyJob_():
     
     def spam_thread(self):
         '''Post reply''' 
+        if self.logged_in != True:
+            self.login()
         r = self.session.post("https://www.nairaland.com/do_newpost", self.reply)
         print(f" ......  {self.reply}")
         print(r.text)
@@ -52,6 +56,7 @@ class BoardReplyJob_():
         self.session = requests.Session()
         self.session_id = ''
         self.topics = []
+        self.logged_in = False
 
 
 
@@ -63,6 +68,7 @@ class BoardReplyJob_():
                 print(self.session)
                 self.session_id = self.session.cookies.get('session')
                 self.reply['session'] = self.session_id
+                self.logged_in = True
                 break
 
 
@@ -86,6 +92,9 @@ class BoardReplyJob_():
 
     def spam_board(self):
         '''Post reply'''
+        if self.logged_in != True:
+            self.login()
+            self.get_topics()
         try:
             topic = next(self.topics)
             self.reply['topic'] = topic
@@ -115,6 +124,7 @@ class FrontPageMonitorJob_():
         self.session_id = ''
         self.topics = []
         self.done_topics = []
+        self.logged_in = False
 
 
 
@@ -126,6 +136,7 @@ class FrontPageMonitorJob_():
                 print(self.session)
                 self.session_id = self.session.cookies.get('session')
                 self.reply['session'] = self.session_id
+                self.logged_in = True
                 break
 
 
@@ -147,6 +158,9 @@ class FrontPageMonitorJob_():
 
     def spam_frontpage(self):
         '''Post reply'''
+        if self.logged_in != True:
+            self.login()
+            self.get_topics()
         if not self.topics[0] in self.done_topics:
             topic = self.topics[0]
             self.reply['topic'] = topic
@@ -164,4 +178,4 @@ class FrontPageMonitorJob_():
 
 
 scheduler.start()
-print('Job added')
+print('Scheduler started')

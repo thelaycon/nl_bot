@@ -1,6 +1,4 @@
 from . import jobs as cron_jobs
-import threading
-from apscheduler.schedulers.background import BackgroundScheduler
 from django.shortcuts import (redirect, render, get_object_or_404)
 from django.contrib.auth.decorators import (login_required)
 from django.contrib.auth import (authenticate, login, logout)
@@ -13,11 +11,9 @@ from django.views.generic.detail import DetailView
 from django.http import HttpResponseRedirect
 from cryptography.fernet import Fernet
 
-sched = BackgroundScheduler()
 
 def start_TdJob(login_details, thread_title, topic_code, thread_reply, thread_job, nl_account, nl_account_pk, minutes):
     job = cron_jobs.ThreadReplyJob_(login_details, thread_title, topic_code, thread_reply)
-    job.login()
     cron_jobs.scheduler.add_job(job.spam_thread, 'interval', minutes=int(minutes), id=nl_account_pk)
 
     #Change has job value
@@ -31,8 +27,6 @@ def start_TdJob(login_details, thread_title, topic_code, thread_reply, thread_jo
 
 def start_BjJob(login_details, board_uri, board_reply, board_job, nl_account, nl_account_pk, minutes):
     job = cron_jobs.BoardReplyJob_(login_details, board_uri, board_reply)
-    job.login()
-    job.get_topics()
     cron_jobs.scheduler.add_job(job.spam_board, 'interval', minutes=int(minutes), id=nl_account_pk)
 
     #Change has job value
@@ -47,8 +41,6 @@ def start_BjJob(login_details, board_uri, board_reply, board_job, nl_account, nl
 
 def start_FpJob(login_details, frontpage_reply, frontpage_job, nl_account, nl_account_pk, seconds):
     job = cron_jobs.FrontPageMonitorJob_(login_details, frontpage_reply)
-    job.login()
-    job.get_topics()
     cron_jobs.scheduler.add_job(job.spam_frontpage, 'interval', seconds=int(seconds), id=nl_account_pk)
     
     #Change has job value
@@ -74,7 +66,7 @@ def home(request):
 
 def loginUser(request):
     if request.method == 'POST':
-        username = request.POST['username']
+        username = request.POST['username'].strip()
         password = request.POST['password']
 
         user = authenticate(request, username=username, password=password)
@@ -167,11 +159,9 @@ def activateTdJob(request, pk):
         else:
             minutes = request.POST['minutes']
             login_details = {'name':nl_account.username,'password':nl_account.password}
-            thread = threading.Thread(target=start_TdJob, args=[login_details, thread_title, topic_code, thread_reply, thread_job, nl_account, nl_account_pk, minutes])
-            thread.setDaemon(True)
-            thread.start()
+            start_TdJob(login_details, thread_title, topic_code, thread_reply, thread_job, nl_account, nl_account_pk, minutes)
 
-            messages.warning(request, "Activating Job, please wait until the Activate Button changes to Deactivate button. Refresh page to see changes. It might take 1  or 2 minutes.")
+            messages.success(request, "Activated Job!!!")
 
             return redirect(reverse('threadreplyjob-detail', kwargs={'pk':thread_job.pk}))
         
@@ -220,14 +210,9 @@ def activateBjJob(request, pk):
         else:
             minutes = request.POST['minutes']
             login_details = {'name':nl_account.username,'password':nl_account.password}
-            thread = threading.Thread(target=start_BjJob, args=[login_details, board_uri, board_reply, board_job, nl_account, nl_account_pk, minutes])
-            thread.setDaemon(True)
-            thread.start()
+            start_BjJob(login_details, board_uri, board_reply, board_job, nl_account, nl_account_pk, minutes)
 
-            messages.warning(request, "Activating Job, please wait until the Activate Button changes to Deactivate button. Refresh page to see changes. It might take 1  or 2 minutes.")
-
-
-
+            messages.success(request, "Activated Job")
             return HttpResponseRedirect(reverse('boardreplyjob-detail', kwargs={'pk':board_job.pk}))
         
 
@@ -274,13 +259,9 @@ def activateFpJob(request, pk):
             seconds = request.POST['seconds']
             print(nl_account_pk)
             login_details = {'name':nl_account.username,'password':nl_account.password}
-            thread = threading.Thread(target=start_FpJob, args=[login_details, frontpage_reply, frontpage_job, nl_account, nl_account_pk, seconds])
-            thread.setDaemon(True)
-            thread.start()
+            start_FpJob(login_details, frontpage_reply, frontpage_job, nl_account, nl_account_pk, seconds)
 
-            messages.warning(request, "Activating Job, please wait until the Activate Button changes to Deactivate button. Refresh page to see changes. It might take 1  or 2 minutes.")
-
-
+            messages.success(request, "Activated Job")
 
             return HttpResponseRedirect(reverse('frontpagemonitorjob-detail', kwargs={'pk':frontpage_job.pk}))
         
