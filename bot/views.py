@@ -1,4 +1,5 @@
 from . import jobs as cron_jobs
+from func_timeout import func_timeout, FunctionTimedOut
 from django.shortcuts import (redirect, render, get_object_or_404)
 from django.contrib.auth.decorators import (login_required)
 from django.contrib.auth import (authenticate, login, logout)
@@ -10,11 +11,15 @@ from django.views.generic.edit import (CreateView, UpdateView, DeleteView)
 from django.views.generic.detail import DetailView
 from django.http import HttpResponseRedirect
 from cryptography.fernet import Fernet
+from datetime import datetime
 
 
 def start_TdJob(login_details, thread_title, topic_code, thread_reply, thread_job, nl_account, nl_account_pk, minutes):
-    job = cron_jobs.ThreadReplyJob_(login_details, thread_title, topic_code, thread_reply)
-    cron_jobs.scheduler.add_job(job.spam_thread, 'interval', minutes=int(minutes), id=nl_account_pk)
+    try:
+        job = func_timeout(20, cron_jobs.ThreadReplyJob_, args=(login_details, thread_title, topic_code, thread_reply))
+    except FunctionTimedOut:
+        raise FunctionTimedOut
+    cron_jobs.scheduler.add_job(job.spam_thread, 'interval', minutes=int(minutes), id=nl_account_pk, replace_existing=True, max_instances=10)
 
     #Change has job value
     nl_account.has_job = True
@@ -26,7 +31,10 @@ def start_TdJob(login_details, thread_title, topic_code, thread_reply, thread_jo
     thread_job.save()
 
 def start_BjJob(login_details, board_uri, board_reply, board_job, nl_account, nl_account_pk, minutes):
-    job = cron_jobs.BoardReplyJob_(login_details, board_uri, board_reply)
+    try:
+        job = func_timeout(25, cron_jobs.BoardReplyJob_, args=(login_details, board_uri, board_reply))
+    except FunctionTimedOut:
+        raise FunctionTimedOut
     cron_jobs.scheduler.add_job(job.spam_board, 'interval', minutes=int(minutes), id=nl_account_pk)
 
     #Change has job value
@@ -40,7 +48,10 @@ def start_BjJob(login_details, board_uri, board_reply, board_job, nl_account, nl
 
 
 def start_FpJob(login_details, frontpage_reply, frontpage_job, nl_account, nl_account_pk, seconds):
-    job = cron_jobs.FrontPageMonitorJob_(login_details, frontpage_reply)
+    try:
+        job = func_timeout(25, cron_jobs.FrontPageMonitorJob_, args=(login_details, frontpage_reply))
+    except FunctionTimedOut:
+        raise FunctionTimedOut
     cron_jobs.scheduler.add_job(job.spam_frontpage, 'interval', seconds=int(seconds), id=nl_account_pk)
     
     #Change has job value
@@ -85,14 +96,19 @@ def license(request):
         user = request.user
         key = request.POST['key']
         profile = models.Profile.objects.get(user=user)
-        cipher_a = key[0:50]
-        cipher_b = key[94:]
+        expires = key[:120]
+        cipher_a = key[120:170]
+        cipher_b = key[214:]
         cipher = cipher_a + cipher_b
-        p_key = key[50:94]
+        p_key = key[170:214]
+        now = datetime.timestamp(datetime.now())
         try:
             f = Fernet(p_key.encode())
             plan = f.decrypt(cipher.encode()).decode()
-            if plan == 'STPLAN':
+            expires = float(f.decrypt(expires.encode()).decode())
+            if now >= expires:
+                raise ValueError()
+            elif plan == 'STPLAN':
                 profile.account_type = 'st'
                 profile.license_key = key
                 profile.activated = True
@@ -106,6 +122,8 @@ def license(request):
         except:
             messages.warning(request, "Invalid Activation Key!!")
     return render(request, 'bot/theme/license.html')
+
+
 
 
 @login_required(login_url='/login/')
@@ -159,9 +177,11 @@ def activateTdJob(request, pk):
         else:
             minutes = request.POST['minutes']
             login_details = {'name':nl_account.username,'password':nl_account.password}
-            start_TdJob(login_details, thread_title, topic_code, thread_reply, thread_job, nl_account, nl_account_pk, minutes)
-
-            messages.success(request, "Activated Job!!!")
+            try:
+                start_TdJob(login_details, thread_title, topic_code, thread_reply, thread_job, nl_account, nl_account_pk, minutes)
+                messages.success(request, "Activated Job!!!")
+            except:
+                messages.warning(request, "Request timed out, please try again!!!")
 
             return redirect(reverse('threadreplyjob-detail', kwargs={'pk':thread_job.pk}))
         
@@ -210,9 +230,12 @@ def activateBjJob(request, pk):
         else:
             minutes = request.POST['minutes']
             login_details = {'name':nl_account.username,'password':nl_account.password}
-            start_BjJob(login_details, board_uri, board_reply, board_job, nl_account, nl_account_pk, minutes)
+            try:
+                start_BjJob(login_details, board_uri, board_reply, board_job, nl_account, nl_account_pk, minutes)
+                messages.success(request, "Activated Job!!!")
+            except:
+                messages.warning(request, "Request timed out, please try again!!!")
 
-            messages.success(request, "Activated Job")
             return HttpResponseRedirect(reverse('boardreplyjob-detail', kwargs={'pk':board_job.pk}))
         
 
@@ -259,9 +282,11 @@ def activateFpJob(request, pk):
             seconds = request.POST['seconds']
             print(nl_account_pk)
             login_details = {'name':nl_account.username,'password':nl_account.password}
-            start_FpJob(login_details, frontpage_reply, frontpage_job, nl_account, nl_account_pk, seconds)
-
-            messages.success(request, "Activated Job")
+            try:
+                start_FpJob(login_details, frontpage_reply, frontpage_job, nl_account, nl_account_pk, seconds)
+                messages.success(request, "Activated Job!!!")
+            except:
+                messages.warning(request, "Request timed out, please try again!!!")
 
             return HttpResponseRedirect(reverse('frontpagemonitorjob-detail', kwargs={'pk':frontpage_job.pk}))
         
