@@ -3,11 +3,24 @@ import random
 from bs4 import BeautifulSoup
 import re
 import time
+import os
 from apscheduler.schedulers.background import BackgroundScheduler
 
 
 
-scheduler = BackgroundScheduler(daemon=True)
+db_url = os.environ.get("DATABASE_URL")
+
+
+
+scheduler = BackgroundScheduler({
+    'apscheduler.jobstores.default': {
+        'type': 'sqlalchemy',
+        'url': db_url
+    },
+    'apscheduler.job_defaults.coalesce': 'false',
+    'apscheduler.job_defaults.max_instances': '3',
+    'apscheduler.timezone': 'UTC',
+})
 
 
 class ThreadReplyJob_():
