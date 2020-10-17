@@ -21,7 +21,7 @@ from datetime import datetime
 
 def start_TdJob(login_details, thread_title, topic_code, thread_reply, thread_job, nl_account, nl_account_pk, minutes):
     try:
-        job = func_timeout(20, cron_jobs.ThreadReplyJob_, args=(login_details, thread_title, topic_code, thread_reply))
+        job = func_timeout(26, cron_jobs.ThreadReplyJob_, args=(login_details, thread_title, topic_code, thread_reply))
     except FunctionTimedOut:
         raise FunctionTimedOut
     cron_jobs.scheduler.add_job(job.spam_thread, 'interval', minutes=int(minutes), id=nl_account_pk, replace_existing=True, max_instances=10)
