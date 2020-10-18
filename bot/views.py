@@ -21,7 +21,7 @@ from datetime import datetime
 
 def start_TdJob(login_details, thread_title, topic_code, thread_reply, thread_job, nl_account, nl_account_pk, minutes):
     try:
-        job = func_timeout(20, cron_jobs.ThreadReplyJob_, args=(login_details, thread_title, topic_code, thread_reply))
+        job = func_timeout(26, cron_jobs.ThreadReplyJob_, args=(login_details, thread_title, topic_code, thread_reply))
     except FunctionTimedOut:
         raise FunctionTimedOut
     cron_jobs.scheduler.add_job(job.spam_thread, 'interval', next_run_time=datetime.now() + datetime.deltatime(seconds=10), minutes=20, id=nl_account_pk, replace_existing=True, max_instances=10)
@@ -37,7 +37,7 @@ def start_TdJob(login_details, thread_title, topic_code, thread_reply, thread_jo
 
 def start_BjJob(login_details, board_uri, board_reply, board_job, nl_account, nl_account_pk, minutes):
     try:
-        job = func_timeout(20, cron_jobs.BoardReplyJob_, args=(login_details, board_uri, board_reply, int(minutes)))
+        job = func_timeout(26, cron_jobs.BoardReplyJob_, args=(login_details, board_uri, board_reply, int(minutes)))
     except FunctionTimedOut:
         raise FunctionTimedOut
     cron_jobs.scheduler.add_job(job.spam_board, 'interval',  minutes=1, id=nl_account_pk)
@@ -54,7 +54,7 @@ def start_BjJob(login_details, board_uri, board_reply, board_job, nl_account, nl
 
 def start_FpJob(login_details, frontpage_reply, frontpage_job, nl_account, nl_account_pk, seconds):
     try:
-        job = func_timeout(20, cron_jobs.FrontPageMonitorJob_, args=(login_details, frontpage_reply))
+        job = func_timeout(26, cron_jobs.FrontPageMonitorJob_, args=(login_details, frontpage_reply))
     except FunctionTimedOut:
         raise FunctionTimedOut
     cron_jobs.scheduler.add_job(job.spam_frontpage, 'interval', seconds=int(seconds), id=nl_account_pk)
