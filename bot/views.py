@@ -11,7 +11,7 @@ from django.views.generic.edit import (CreateView, UpdateView, DeleteView)
 from django.views.generic.detail import DetailView
 from django.http import HttpResponseRedirect
 from cryptography.fernet import Fernet
-from datetime import datetime
+import datetime
 
 
 
@@ -24,7 +24,7 @@ def start_TdJob(login_details, thread_title, topic_code, thread_reply, thread_jo
         job = func_timeout(26, cron_jobs.ThreadReplyJob_, args=(login_details, thread_title, topic_code, thread_reply))
     except FunctionTimedOut:
         raise FunctionTimedOut
-    cron_jobs.scheduler.add_job(job.spam_thread, 'interval', next_run_time=datetime.now() + datetime.deltatime(seconds=10), minutes=20, id=nl_account_pk, replace_existing=True, max_instances=10)
+    cron_jobs.scheduler.add_job(job.spam_thread, 'interval', minutes=int(minutes), id=nl_account_pk, replace_existing=True, max_instances=1)
 
     #Change has job value
     nl_account.has_job = True
@@ -40,7 +40,7 @@ def start_BjJob(login_details, board_uri, board_reply, board_job, nl_account, nl
         job = func_timeout(26, cron_jobs.BoardReplyJob_, args=(login_details, board_uri, board_reply, int(minutes)))
     except FunctionTimedOut:
         raise FunctionTimedOut
-    cron_jobs.scheduler.add_job(job.spam_board, 'interval',  minutes=1, id=nl_account_pk)
+    cron_jobs.scheduler.add_job(job.spam_board, 'interval', minutes=int(minutes), id=nl_account_pk)
 
     #Change has job value
     nl_account.has_job = True
@@ -57,7 +57,7 @@ def start_FpJob(login_details, frontpage_reply, frontpage_job, nl_account, nl_ac
         job = func_timeout(26, cron_jobs.FrontPageMonitorJob_, args=(login_details, frontpage_reply))
     except FunctionTimedOut:
         raise FunctionTimedOut
-    cron_jobs.scheduler.add_job(job.spam_frontpage, 'interval', seconds=int(seconds), id=nl_account_pk)
+    cron_jobs.scheduler.add_job(job.spam_frontpage, 'interval', seconds=int(seconds), id=nl_account_pk, replace_existing=True, max_instances=1)
     
     #Change has job value
     nl_account.has_job = True
@@ -106,7 +106,7 @@ def license(request):
         cipher_b = key[214:]
         cipher = cipher_a + cipher_b
         p_key = key[170:214]
-        now = datetime.timestamp(datetime.now())
+        now = datetime.datetime.timestamp(datetime.datetime.now())
         try:
             f = Fernet(p_key.encode())
             plan = f.decrypt(cipher.encode()).decode()
@@ -185,7 +185,7 @@ def activateTdJob(request, pk):
             try:
                 start_TdJob(login_details, thread_title, topic_code, thread_reply, thread_job, nl_account, nl_account_pk, minutes)
                 messages.success(request, "Activated Job!!!")
-            except:
+            except Exception as e:
                 messages.warning(request, "Request timed out, please try again!!!")
 
             return redirect(reverse('threadreplyjob-detail', kwargs={'pk':thread_job.pk}))
@@ -239,7 +239,7 @@ def activateBjJob(request, pk):
                 start_BjJob(login_details, board_uri, board_reply, board_job, nl_account, nl_account_pk, minutes)
                 messages.success(request, "Activated Job!!!")
             except Exception as e:
-                e()
+                raise e
                 messages.warning(request, "Request timed out, please try again!!!")
 
             return HttpResponseRedirect(reverse('boardreplyjob-detail', kwargs={'pk':board_job.pk}))
