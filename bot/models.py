@@ -85,6 +85,12 @@ class FrontPageMonitorJob(models.Model):
         return reverse('frontpagemonitorjob-detail', kwargs = {'pk':self.pk})
 
 
+class DoneFPTopics(models.Model):
+    topic = models.CharField(max_length = 11)
+
+class DoneBJTopics(models.Model):
+    topic = models.CharField(max_length = 11)
+
 
 
 @receiver(user_logged_in)
