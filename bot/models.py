@@ -94,6 +94,7 @@ class DoneBJTopics(models.Model):
     date = models.DateTimeField(unique=True)
 
 class DoneTDTopics(models.Model):
+    topic = models.CharField(null=True)
     date = models.DateTimeField(unique=True)
 
 
