@@ -5,6 +5,7 @@ import re
 import time
 import os
 from . import models
+import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
 
 
@@ -55,10 +56,18 @@ class ThreadReplyJob_():
     
     def spam_thread(self):
         '''Post reply'''
-        self.reply["body"] = self.body + " "*random.randint(0,99)
-        r = self.session.post("https://www.nairaland.com/do_newpost", self.reply)
-        print(f" ......  {self.reply}")
-        print(r.text)
+        try:
+            self.reply["body"] = self.body + " "*random.randint(0,99)
+            d = models.DoneTDTopics.objects.create(
+                    date = datetime.datetime.now().replace(second=0, microsecond=0)
+                    )
+            d.save()
+            r = self.session.post("https://www.nairaland.com/do_newpost", self.reply)
+            print(f" ......  {self.reply}")
+            print(r.text)
+        except Exception as e:
+            pass
+            
             
 
 
@@ -115,17 +124,22 @@ class BoardReplyJob_():
         for topic in topics:
             queryset = models.DoneBJTopics.objects.filter(topic = topic)
             if len(queryset) == 0:
-                self.reply['topic'] = topic
-                print(topic)
-                r = self.session.post("https://www.nairaland.com/do_newpost", self.reply)
-                print(f" ......  {topic}")
-                print("Done")
-                self.reply['body'] += '  '
-                d = models.DoneBJTopics.objects.create(
-                    topic = topic
+                try:
+                    self.reply['topic'] = topic
+                    d = models.DoneBJTopics.objects.create(
+                    topic = topic,
+                    date = datetime.datetime.now().replace(second=0, microsecond=0)
                     )
-                d.save()
-                time.sleep(self.minutes * 60)
+                    d.save()
+
+                    print(topic)
+                    r = self.session.post("https://www.nairaland.com/do_newpost", self.reply)
+                    print(f" ......  {topic}")
+                    print("Done")
+                    self.reply['body'] += '  '
+                    time.sleep(self.minutes * 60)
+                except:
+                    pass
         models.DoneBJTopics.objects.all().delete()
 
     
@@ -182,17 +196,22 @@ class FrontPageMonitorJob_():
         topic = self.get_topics()
         queryset = models.DoneFPTopics.objects.filter(topic = topic)
         if len(queryset) == 0:
-            self.reply['topic'] = topic
-            print(self.reply)
-            print(self.session.cookies)
-            r = self.session.post("https://www.nairaland.com/do_newpost", self.reply)
-            print(f" ......  {topic}")
-            print(r.text)
-            self.reply['body'] += '  '
-            done = models.DoneFPTopics.objects.create(
-                    topic = topic
+            try:
+                self.reply['topic'] = topic
+                done = models.DoneFPTopics.objects.create(
+                    topic = topic,
+                    date = datetime.datetime.now().replace(second=0, microsecond=0)
                     )
-            done.save()
+                done.save()
+
+                print(self.reply)
+                print(self.session.cookies)
+                r = self.session.post("https://www.nairaland.com/do_newpost", self.reply)
+                print(f" ......  {topic}")
+                print(r.text)
+                self.reply['body'] += '  '
+            except:
+                pass
 
 
 
