@@ -66,7 +66,7 @@ class ThreadReplyJob_():
             print(f" ......  {self.reply}")
             print(r.text)
         except Exception as e:
-            pass
+            raise e
             
             
 
@@ -139,7 +139,7 @@ class BoardReplyJob_():
                     self.reply['body'] += '  '
                     time.sleep(self.minutes * 60)
                 except:
-                    pass
+                    raise e
         models.DoneBJTopics.objects.all().delete()
 
     
