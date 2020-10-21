@@ -57,7 +57,8 @@ class ThreadReplyJob_():
     def spam_thread(self):
         '''Post reply'''
         try:
-            self.reply["body"] = self.body + " "*random.randint(0,99)
+            body = self.body.split("|")
+            self.reply["body"] = random.choice(body) + " "*random.randint(0,99)
             d = models.DoneTDTopics.objects.create(
                     date = datetime.datetime.now().replace(second=0, microsecond=0)
                     )
@@ -119,7 +120,8 @@ class BoardReplyJob_():
 
     def spam_board(self):
         '''Post reply'''
-        self.reply["body"] = self.body + " "*random.randint(0,99)
+        body = self.body.split("|")
+        self.reply["body"] = random.choice(body) + " "*random.randint(0,99)
         topics = self.get_topics()
         for topic in topics:
             queryset = models.DoneBJTopics.objects.filter(topic = topic)
@@ -192,7 +194,8 @@ class FrontPageMonitorJob_():
 
     def spam_frontpage(self):
         '''Post reply'''
-        self.reply["body"] = self.body + " "*random.randint(0,99)
+        body = self.body.split("|")
+        self.reply["body"] = random.choice(body) + " "*random.randint(0,99)
         topic = self.get_topics()
         queryset = models.DoneFPTopics.objects.filter(topic = topic)
         if len(queryset) == 0:

@@ -86,8 +86,8 @@ class FrontPageMonitorJob(models.Model):
 
 
 class DoneFPTopics(models.Model):
-    topic = models.CharField(max_length = 11)
-    date = models.DateTimeField(unique=True)
+    topic = models.CharField(max_length = 11, unique=True)
+    date = models.DateTimeField(unique=False)
 
 class DoneBJTopics(models.Model):
     topic = models.CharField(max_length = 11)
