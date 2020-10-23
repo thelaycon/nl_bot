@@ -22,6 +22,7 @@ scheduler = BackgroundScheduler({
     'apscheduler.job_defaults.coalesce': 'false',
     'apscheduler.job_defaults.max_instances': '1',
     'apscheduler.timezone': 'UTC',
+    'apscheduler.misfire_grace_time':'3*60',
 })
 
 
