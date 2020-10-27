@@ -6,7 +6,7 @@ urlpatterns = [
         path('', views.home, name='home'),
         path('login/', views.loginUser, name='login'),
         path('logout/', views.logoutUser, name='logout'),
-        path('license/', views.license, name='license'),
+        path('db/clear/', views.clear_db, name="Clear Database"),
 
         #Accounts Paths
 

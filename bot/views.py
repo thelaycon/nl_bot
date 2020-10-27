@@ -10,7 +10,6 @@ from django.urls import (reverse_lazy, reverse)
 from django.views.generic.edit import (CreateView, UpdateView, DeleteView)
 from django.views.generic.detail import DetailView
 from django.http import HttpResponseRedirect
-from cryptography.fernet import Fernet
 import datetime
 
 
@@ -35,6 +34,9 @@ def start_TdJob(login_details, thread_title, topic_code, thread_reply, thread_jo
     nl_account.save()
     thread_job.save()
 
+
+
+
 def start_BjJob(login_details, board_uri, board_reply, board_job, nl_account, nl_account_pk, minutes):
     try:
         job = func_timeout(26, cron_jobs.BoardReplyJob_, args=(login_details, board_uri, board_reply, int(minutes)))
@@ -50,6 +52,8 @@ def start_BjJob(login_details, board_uri, board_reply, board_job, nl_account, nl
     board_job.nl_account_pk = nl_account_pk
     nl_account.save()
     board_job.save()
+
+
 
 
 def start_FpJob(login_details, frontpage_reply, frontpage_job, nl_account, nl_account_pk, seconds):
@@ -69,6 +73,8 @@ def start_FpJob(login_details, frontpage_reply, frontpage_job, nl_account, nl_ac
     frontpage_job.save()
 
 
+
+
 @login_required(login_url='/login')
 def home(request):
     context = {
@@ -78,6 +84,7 @@ def home(request):
     }
 
     return render(request, 'bot/theme/index.html', context)
+
 
 
 def loginUser(request):
@@ -95,40 +102,14 @@ def logoutUser(request):
     logout(request)
     return redirect('/login/')
 
-@login_required(login_url='/login/')
-def license(request):
-    if request.method == 'POST':
-        user = request.user
-        key = request.POST['key']
-        profile = models.Profile.objects.get(user=user)
-        expires = key[:120]
-        cipher_a = key[120:170]
-        cipher_b = key[214:]
-        cipher = cipher_a + cipher_b
-        p_key = key[170:214]
-        now = datetime.datetime.timestamp(datetime.datetime.now())
-        try:
-            f = Fernet(p_key.encode())
-            plan = f.decrypt(cipher.encode()).decode()
-            expires = float(f.decrypt(expires.encode()).decode())
-            if now >= expires:
-                raise ValueError()
-            elif plan == 'STPLAN':
-                profile.account_type = 'st'
-                profile.license_key = key
-                profile.activated = True
-                profile.save()
-            elif plan == 'PRPLAN':
-                profile.account_type = 'pr'
-                profile.license_key = key
-                profile.activated = True
-                profile.save()
-            messages.success(request, "Account activated successfully!")
-        except:
-            messages.warning(request, "Invalid Activation Key!!")
-    return render(request, 'bot/theme/license.html')
 
 
+@login_required(login_url="/login")
+def clear_db(request):
+    models.DoneFPTopics.objects.all().delete()
+    models.DoneTDTopics.objects.all().delete()
+    models.DoneBJTopics.objects.all().delete()
+    return redirect("/")
 
 
 @login_required(login_url='/login/')
@@ -368,14 +349,6 @@ class BoardJobCreate(LoginRequiredMixin,CreateView):
     template_name = 'bot/theme/boardreplyjob_form.html'
     fields = ['board_name', 'board_uri', 'reply']
 
-    def dispatch(self, request, *args, **kwargs):
-        user = request.user
-        if user.profile.activated:
-            pass
-        else:
-            messages.warning(request, "Please activate account!!!")
-            return redirect('/license')
-        return super(BoardJobCreate, self).dispatch(request, *args, **kwargs)
 
 
 class BoardJobDetail(LoginRequiredMixin, DetailView):
@@ -410,14 +383,6 @@ class ThreadJobCreate(LoginRequiredMixin,CreateView):
     template_name = 'bot/theme/threadreplyjob_form.html'
     fields = ['thread_title', 'topic_code', 'reply']
 
-    def dispatch(self, request, *args, **kwargs):
-        user = request.user
-        if user.profile.activated:
-            pass
-        else:
-            messages.warning(request, "Please activate account!!!") 
-            return redirect('/license')
-        return super(ThreadJobCreate, self).dispatch(request, *args, **kwargs)
 
 
 
@@ -435,6 +400,8 @@ class ThreadJobUpdate(LoginRequiredMixin, UpdateView):
     model = models.ThreadReplyJob
     template_name = 'bot/theme/threadreplyjob_update.html'
     fields = ['thread_title', 'topic_code', 'reply']
+
+
 
 
 class ThreadJobDelete(LoginRequiredMixin, DeleteView):
@@ -455,16 +422,7 @@ class FrontPageMonitorJobCreate(LoginRequiredMixin,CreateView):
     fields = ['reply',]
 
 
-    def dispatch(self, request, *args, **kwargs):
-        user = request.user
-        if user.profile.activated and user.profile.account_type == 'pr':
-            pass
-        else:
-            messages.warning(request, 'Only Premium Accounts can!!')
-            return redirect('/jobs')
-        return super(FrontPageMonitorJobCreate, self).dispatch(request, *args, **kwargs)
-
-
+    
 
 
 class FrontPageMonitorJobDetail(LoginRequiredMixin, DetailView):

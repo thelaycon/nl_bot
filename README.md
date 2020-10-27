@@ -37,7 +37,7 @@ gunicorn project.wsgi
 
 ```
 
-# USAGE:
+# USAGE: (Protection no longer supported)
 
 NL Bot doesn't support registration form the Frontend because it was originally not intended for **SaaS**. You must manually create a User object from the command Line.
 
