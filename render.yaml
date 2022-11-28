@@ -1,18 +1,18 @@
 databases:
-  - name: bot
-    databaseName: bot
-    user: bot
+  - name: project
+    databaseName: project
+    user: project
 
 services:
   - type: web
-    name: bot
+    name: project
     env: python
     buildCommand: "./build.sh"
-    startCommand: "gunicorn bot.wsgi:application"
+    startCommand: "gunicorn project.wsgi:application"
     envVars:
       - key: DATABASE_URL
         fromDatabase:
-          name: bot
+          name: project
           property: connectionString
       - key: SECRET_KEY
         generateValue: true
