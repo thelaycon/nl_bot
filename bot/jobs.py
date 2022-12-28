@@ -39,14 +39,10 @@ class ThreadReplyJob_():
 
 
     def login(self):
-        if self.session.cookies.get("session") == None:
-            while len(self.session.cookies.get("session", "")) < 5:
-                r = self.session.post("https://www.nairaland.com/do_login", self.login_details)
-                self.session.get(r.url)
-                self.session_id = self.session.cookies.get('session')
-                print(self.session.cookies.get('session'))
-                print(self.session.cookies)
-                self.reply['session'] = self.session_id
+        r = self.session.post("https://www.nairaland.com/do_login", self.login_details)
+        self.session.get(r.url)
+        self.session_id = self.session.cookies.get('session')
+        self.reply['session'] = self.session_id
 
 
 
