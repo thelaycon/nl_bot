@@ -33,7 +33,6 @@ def start_TdJob(login_details, thread_title, topic_code, thread_reply, thread_jo
     thread_job.nl_account_pk = nl_account_pk
     nl_account.save()
     thread_job.save()
-    return job.session_id
 
 
 
@@ -165,8 +164,8 @@ def activateTdJob(request, pk):
             minutes = request.POST['minutes']
             login_details = {'name':nl_account.username,'password':nl_account.password}
             try:
-                session_id = start_TdJob(login_details, thread_title, topic_code, thread_reply, thread_job, nl_account, nl_account_pk, minutes)
-                messages.success(request, session_id)
+                start_TdJob(login_details, thread_title, topic_code, thread_reply, thread_job, nl_account, nl_account_pk, minutes)
+                messages.success(request, "Activated Job!!!")
             except Exception as e:
                 messages.warning(request, "Request timed out, please try again!!!")
 
